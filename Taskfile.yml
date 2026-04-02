@@ -1,0 +1,51 @@
+version: '3'
+
+vars:
+  APP_NAME: app
+  PORT: 8080
+
+tasks:
+  run:
+    desc: Run the Go app
+    cmds:
+      - go run main.go
+
+  build:
+    desc: Build binary
+    cmds:
+      - go build -o {{.APP_NAME}} main.go
+
+  start:
+    desc: Run built binary
+    cmds:
+      - ./{{.APP_NAME}}
+
+  dev:
+    desc: Run with auto reload (butuh air)
+    cmds:
+      - air
+
+  test:
+    desc: Run curl test
+    cmds:
+      - curl http://localhost:{{.PORT}}
+
+  test-http:
+    desc: Run HTTP test
+    cmds:
+      - curl -L --proxy http://localhost:{{.PORT}} http://google.com
+
+  test-https:
+    desc: Run HTTP test
+    cmds:
+      - curl -Lv --proxy http://localhost:{{.PORT}} https://example.org
+
+  health:
+    desc: Check if the app is running
+    cmds:
+      - curl http://localhost:{{.PORT}}/health
+
+  clean:
+    desc: Remove binary
+    cmds:
+      - rm -f {{.APP_NAME}}
