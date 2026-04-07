@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	proxy "go-proxy/forward-proxy"
 )
 
 func handleHTTP(w http.ResponseWriter, r *http.Request) {
@@ -94,18 +96,20 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	log.Fatal(http.ListenAndServe(
-		":8080",
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Method == http.MethodConnect {
-				handleTunnel(w, r)
-			} else {
-				if r.URL.Path == "/health" {
-					healthCheck(w, r)
-				} else {
-					handleHTTP(w, r)
-				}
-			}
-		})),
-	)
+	// log.Fatal(http.ListenAndServe(
+	// 	":8080",
+	// 	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 		if r.Method == http.MethodConnect {
+	// 			handleTunnel(w, r)
+	// 		} else {
+	// 			if r.URL.Path == "/health" {
+	// 				healthCheck(w, r)
+	// 			} else {
+	// 				handleHTTP(w, r)
+	// 			}
+	// 		}
+	// 	})),
+	// )
+
+	proxy.Start()
 }
