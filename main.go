@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	proxy "go-proxy/forward-proxy"
+	reverse "go-proxy/reverse-proxy"
 )
 
 func handleHTTP(w http.ResponseWriter, r *http.Request) {
@@ -111,5 +111,6 @@ func main() {
 	// 	})),
 	// )
 
-	proxy.Start()
+	// forward.Start()
+	reverse.Start()
 }
