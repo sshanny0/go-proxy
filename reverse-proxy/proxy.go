@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"sync/atomic"
+	"time"
 )
 
 type ReverseProxy struct {
@@ -33,6 +34,20 @@ func (rp *ReverseProxy) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	proxy.ServeHTTP(w, r)
 }
 
+func (p *ReverseProxy) healthCheck() {
+	for {
+		for _, backend := range p.backends {
+			resp, err := http.Get(backend.String())
+			if err != nil {
+				log.Printf("Error checking backend %s: %v", backend.String(), err)
+			} else {
+				resp.Body.Close()
+			}
+		}
+		time.Sleep(10 * time.Second)
+	}
+}
+
 func Start() {
 	backends := []string{
 		"http://localhost:8081",
@@ -42,6 +57,8 @@ func Start() {
 	if err != nil {
 		panic(err)
 	}
+	go proxy.healthCheck()
+
 	http.HandleFunc("/", proxy.serveHTTP)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
